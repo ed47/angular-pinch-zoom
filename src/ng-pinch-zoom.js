@@ -1,3 +1,4 @@
+/*! angular-pinch-zoom - v0.2.1 */
 angular.module('ngPinchZoom', [])
 /**
  * @ngdoc directive
@@ -74,12 +75,16 @@ angular.module('ngPinchZoom', [])
      * @param {object} evt
      */
     function touchstartHandler(evt) {
+        if (scale > 1)
+            evt.stopPropagation();
+
       var touches = evt.originalEvent ? evt.originalEvent.touches : evt.touches;
 
       startX = touches[0].clientX;
       startY = touches[0].clientY;
-      initialPositionX = positionX;
-      initialPositionY = positionY;
+      initialPositionX = positionX ;
+      initialPositionY = positionY ;
+
       moveX = 0;
       moveY = 0;
     }
@@ -88,6 +93,10 @@ angular.module('ngPinchZoom', [])
      * @param {object} evt
      */
     function touchmoveHandler(evt) {
+        if (scale > 1) {
+            evt.stopPropagation();
+        }
+
       var touches = evt.originalEvent ? evt.originalEvent.touches : evt.touches;
 
       if (mode === '') {
@@ -112,6 +121,9 @@ angular.module('ngPinchZoom', [])
       }
 
       if (mode === 'swipe') {
+
+       
+
         evt.preventDefault();
 
         moveX = touches[0].clientX - startX;
@@ -130,7 +142,7 @@ angular.module('ngPinchZoom', [])
         scale = relativeScale * initialScale;
 
         positionX = originX * (1 - relativeScale) + initialPositionX + moveX;
-        positionY = originY * (1 - relativeScale) + initialPositionY + moveY;
+        positionY = originY * (1 - relativeScale) + initialPositionY + moveY + element[0].parentElement.scrollTop * (1 - relativeScale);
 
         transformElement();
 
@@ -141,6 +153,11 @@ angular.module('ngPinchZoom', [])
      * @param {object} evt
      */
     function touchendHandler(evt) {
+
+        if (scale > 1) {
+            evt.stopPropagation();
+        } 
+
       var touches = evt.originalEvent ? evt.originalEvent.touches : evt.touches;
 
       if (mode === '' || touches.length > 0) {
@@ -158,7 +175,7 @@ angular.module('ngPinchZoom', [])
         scale = maxScale;
         relativeScale = scale / initialScale;
         positionX = originX * (1 - relativeScale) + initialPositionX + moveX;
-        positionY = originY * (1 - relativeScale) + initialPositionY + moveY;
+        positionY = originY * (1 - relativeScale) + initialPositionY + moveY + element[0].parentElement.scrollTop * (1 - relativeScale);
 
       } else {
 
